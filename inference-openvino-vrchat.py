@@ -61,7 +61,7 @@ def send_param_float(param_base, axis, value):
 
 def send_keypoint(keypoint: Tensor, name):
     x = keypoint[0].item()
-    y = keypoint[y].item()
+    y = keypoint[1].item()
     print(name, x, y)
     send_param_float(name, "X", x)
     send_param_float(name, "Y", y)
@@ -76,9 +76,38 @@ while True:
     img = cv2.resize(img, (640, 480))
 
     results = model.predict(img)[0]
-    keypoint = results.keypoints.xyn[0][0]
-    print(keypoint[0], keypoint[1])
-    send_keypoint(keypoint, "Head")
+
+    if len(results.keypoints.xyn) < 1:
+        continue
+
+    keypoints = results.keypoints.xyn[0]
+
+    print(len(keypoints))
+
+    h, w = img.shape[:2]
+    for idx, kp in enumerate(keypoints):
+        x = int(kp[0].item() * w)
+        y = int(kp[1].item() * h)
+        cv2.putText(img, str(idx), (x, y), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
+
+    # send_keypoint(keypoints[0], "Head")
+    send_keypoint(keypoints[5], "LeftShoulder")
+    send_keypoint(keypoints[6], "RightShoulder")
+
+    send_keypoint(keypoints[7], "LeftElbow")
+    send_keypoint(keypoints[8], "RightElbow")
+
+    send_keypoint(keypoints[9], "LeftWrist")
+    send_keypoint(keypoints[10], "RightWrist")
+
+    send_keypoint(keypoints[11], "LeftHip")
+    send_keypoint(keypoints[12], "RightHip")
+
+    send_keypoint(keypoints[13], "LeftKnee")
+    send_keypoint(keypoints[14], "RightKnee")
+
+    send_keypoint(keypoints[15], "LeftAnkle")
+    send_keypoint(keypoints[16], "RightAnkle")
 
     print(len(results[0]))
     # print(results[0][0])
