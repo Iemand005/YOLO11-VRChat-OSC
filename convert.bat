@@ -1,0 +1,1 @@
+yolo export model=yolo11n-pose.pt format=openvino int8=True data=coco8-pose.yaml
